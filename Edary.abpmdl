@@ -1,0 +1,109 @@
+{
+  "template": "app",
+  "imports": {
+    "Volo.Abp.LeptonXLiteTheme": {
+      "version": "5.0.2",
+      "isInstalled": true,
+      "creationTime": "02/09/2026 16:15:24 +00:00"
+    },
+    "Volo.Abp.Account": {
+      "version": "10.0.2",
+      "isInstalled": true,
+      "creationTime": "02/09/2026 16:15:24 +00:00"
+    },
+    "Volo.Abp.OpenIddict": {
+      "version": "10.0.2",
+      "isInstalled": true,
+      "creationTime": "02/09/2026 16:15:24 +00:00"
+    },
+    "Volo.Abp.Identity": {
+      "version": "10.0.2",
+      "isInstalled": true,
+      "creationTime": "02/09/2026 16:15:24 +00:00"
+    },
+    "Volo.Abp.TenantManagement": {
+      "version": "10.0.2",
+      "isInstalled": true,
+      "creationTime": "02/09/2026 16:15:24 +00:00"
+    },
+    "Volo.Abp.SettingManagement": {
+      "version": "10.0.2",
+      "isInstalled": true,
+      "creationTime": "02/09/2026 16:15:24 +00:00"
+    },
+    "Volo.Abp.PermissionManagement": {
+      "version": "10.0.2",
+      "isInstalled": true,
+      "creationTime": "02/09/2026 16:15:24 +00:00"
+    },
+    "Volo.Abp.FeatureManagement": {
+      "version": "10.0.2",
+      "isInstalled": true,
+      "creationTime": "02/09/2026 16:15:24 +00:00"
+    }
+  },
+  "folders": {
+    "items": {
+      "src": {},
+      "test": {}
+    }
+  },
+  "packages": {
+    "Edary.Application": {
+      "path": "src/Edary.Application/Edary.Application.abppkg",
+      "folder": "src"
+    },
+    "Edary.Application.Tests": {
+      "path": "test/Edary.Application.Tests/Edary.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "Edary.Domain.Shared": {
+      "path": "src/Edary.Domain.Shared/Edary.Domain.Shared.abppkg",
+      "folder": "src"
+    },
+    "Edary.Application.Contracts": {
+      "path": "src/Edary.Application.Contracts/Edary.Application.Contracts.abppkg",
+      "folder": "src"
+    },
+    "Edary.HttpApi": {
+      "path": "src/Edary.HttpApi/Edary.HttpApi.abppkg",
+      "folder": "src"
+    },
+    "Edary.HttpApi.Client": {
+      "path": "src/Edary.HttpApi.Client/Edary.HttpApi.Client.abppkg",
+      "folder": "src"
+    },
+    "Edary.EntityFrameworkCore.Tests": {
+      "path": "test/Edary.EntityFrameworkCore.Tests/Edary.EntityFrameworkCore.Tests.abppkg",
+      "folder": "test"
+    },
+    "Edary.EntityFrameworkCore": {
+      "path": "src/Edary.EntityFrameworkCore/Edary.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "Edary.TestBase": {
+      "path": "test/Edary.TestBase/Edary.TestBase.abppkg",
+      "folder": "test"
+    },
+    "Edary.Domain.Tests": {
+      "path": "test/Edary.Domain.Tests/Edary.Domain.Tests.abppkg",
+      "folder": "test"
+    },
+    "Edary.HttpApi.Client.ConsoleTestApp": {
+      "path": "test/Edary.HttpApi.Client.ConsoleTestApp/Edary.HttpApi.Client.ConsoleTestApp.abppkg",
+      "folder": "test"
+    },
+    "Edary.DbMigrator": {
+      "path": "src/Edary.DbMigrator/Edary.DbMigrator.abppkg",
+      "folder": "src"
+    },
+    "Edary.HttpApi.Host": {
+      "path": "src/Edary.HttpApi.Host/Edary.HttpApi.Host.abppkg",
+      "folder": "src"
+    },
+    "Edary.Domain": {
+      "path": "src/Edary.Domain/Edary.Domain.abppkg",
+      "folder": "src"
+    }
+  }
+}
