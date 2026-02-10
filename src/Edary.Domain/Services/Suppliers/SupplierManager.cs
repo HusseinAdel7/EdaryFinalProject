@@ -17,29 +17,39 @@ namespace Edary.Domain.Services.Suppliers
             _supplierRepository = supplierRepository;
         }
 
+        /// <summary>
+        /// يولّد كود مورد بشكل تسلسلي بصيغة ثابتة مثلاً: SUP-000001, SUP-000002, ...
+        /// مع ضمان عدم التكرار (عبر الـ Unique Index على SupplierCode).
+        /// </summary>
         [UnitOfWork]
         public virtual async Task<string> GenerateNewSupplierCodeAsync()
         {
             var queryable = await _supplierRepository.GetQueryableAsync().ConfigureAwait(false);
 
-            // SupplierCode is unique (see configuration). We generate next numeric code as string.
             var maxCode = queryable
                 .Select(s => s.SupplierCode)
                 .OrderByDescending(c => c)
                 .FirstOrDefault();
 
+            // أول كود في النظام
             if (string.IsNullOrWhiteSpace(maxCode))
             {
-                return "1";
+                return "SUP-000001";
             }
 
-            if (!long.TryParse(maxCode, out var maxValue))
+            // نستخرج الجزء الرقمي من آخر كود (يدعم وجود Prefix قديم)
+            var numericPart = new string(maxCode.Where(char.IsDigit).ToArray());
+
+            if (!long.TryParse(numericPart, out var maxValue))
             {
                 throw new BusinessException("Edary:InvalidSupplierCodeFormat",
-                    $"Cannot generate new SupplierCode because existing max code '{maxCode}' is not numeric.");
+                    $"Cannot generate new SupplierCode because existing max code '{maxCode}' does not contain a valid numeric part.");
             }
 
-            return (maxValue + 1).ToString();
+            var nextValue = maxValue + 1;
+
+            // نثبّت طول الجزء الرقمي على 6 أرقام (تقدر تغيّره لو حابب)
+            return $"SUP-{nextValue:D6}";
         }
     }
 }
