@@ -8,6 +8,14 @@ export const APP_ROUTES: Routes = [
     loadComponent: () => import('./home/home.component').then(c => c.HomeComponent),
   },
   {
+    path: 'main-accounts',
+    loadChildren: () => import('./modules/main-accounts/main-accounts-module').then(m => m.MainAccountsModule),
+  },
+  {
+    path: 'suppliers',
+    loadChildren: () => import('./modules/suppliers/suppliers-module').then(m => m.SuppliersModule),
+  },
+  {
     path: 'account',
     loadChildren: () => import('@abp/ng.account').then(c => c.createRoutes()),
   },

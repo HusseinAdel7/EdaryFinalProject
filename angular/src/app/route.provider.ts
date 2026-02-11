@@ -17,5 +17,20 @@ function configureRoutes() {
         order: 1,
         layout: eLayoutType.application,
       },
+       {
+        path: 'main-accounts',
+        name: 'Main Accounts',
+        iconClass: 'fa-solid fa-list',
+        order: 2,
+        layout: eLayoutType.application,
+      },
+      ,
+       {
+        path: 'suppliers',
+        name: 'suppliers',
+        iconClass: 'fa-solid fa-list',
+        order: 3,
+        layout: eLayoutType.application,
+      },
   ]);
 }

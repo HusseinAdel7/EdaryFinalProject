@@ -1,0 +1,118 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+
+  .page-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .btn-add {
+    padding: 0.6rem 1.2rem;
+    background: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #45a049;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+  }
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+
+  .table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 900px;
+    background: #fff;
+
+    thead {
+      background: #f3f4f6;
+      tr {
+        th {
+          padding: 1rem;
+          text-align: left;
+          font-weight: 600;
+          color: #555;
+          position: sticky;
+          top: 0;
+          z-index: 1;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        transition: all 0.3s ease;
+        cursor: pointer;
+
+        &:hover {
+          background: #f0f9ff;
+          transform: scale(1.01);
+        }
+
+        &.child-row {
+          background: #fafafa;
+          font-style: italic;
+        }
+
+        td {
+          padding: 0.8rem 1rem;
+          color: #444;
+
+          &.rtl {
+            direction: rtl;
+            text-align: right;
+          }
+
+          [data-label]::before {
+            display: none; // responsive labels if needed
+          }
+        }
+
+        .status {
+          padding: 0.3rem 0.8rem;
+          border-radius: 12px;
+          font-weight: 600;
+          text-align: center;
+          display: inline-block;
+          transition: all 0.3s ease;
+
+          &.active {
+            background: #e6f4ea;
+            color: #2e7d32;
+          }
+
+          &.inactive {
+            background: #ffe6e6;
+            color: #c62828;
+          }
+        }
+      }
+    }
+  }
+}
+
+.alert {
+  background: #fff3cd;
+  color: #856404;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}

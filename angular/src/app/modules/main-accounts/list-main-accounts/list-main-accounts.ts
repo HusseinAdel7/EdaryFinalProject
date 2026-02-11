@@ -1,11 +1,29 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { MainAccountService } from 'src/app/proxy/app-services/main-accounts';
+import { MainAccountDto, MainAccountPagedRequestDto } from 'src/app/proxy/dtos/main-accounts';
 
 @Component({
   selector: 'app-list-main-accounts',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './list-main-accounts.html',
   styleUrl: './list-main-accounts.scss'
 })
-export class ListMainAccounts {
 
+export class ListMainAccounts implements OnInit {
+  accounts: MainAccountDto[] = [];
+  input: MainAccountPagedRequestDto = { maxResultCount: 10, skipCount: 0 };
+  constructor(private mainAccountService: MainAccountService) {
+
+
+  }
+  ngOnInit(): void {
+    this.loadMainAccounts();
+  }
+  loadMainAccounts() {
+    this.mainAccountService.getList(this.input).subscribe(result => {
+      this.accounts = result.items;
+    })
+  }
 }

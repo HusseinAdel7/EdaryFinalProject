@@ -1,1 +1,67 @@
-<p>list-supplies works!</p>
+<div *ngIf="suppliers?.length > 0; else noData">
+  <div class="table-wrapper">
+    <table class="table" id="tblSuppliers">
+      <thead>
+        <tr>
+          <th>Supplier Code</th>
+          <th>Supplier Name</th>
+          <th>Supplier Name En</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Tax Number</th>
+          <th>Status</th>
+          <th>Created Date</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <ng-container *ngFor="let supplier of suppliers; trackBy: trackById">
+          <tr>
+            <td data-label="Supplier Code">
+              {{ supplier.supplierCode || '-' }}
+            </td>
+
+            <td data-label="Supplier Name" class="rtl">
+              {{ supplier.supplierName || '-' }}
+            </td>
+
+            <td data-label="Supplier Name En">
+              {{ supplier.supplierNameEn || '-' }}
+            </td>
+
+            <td data-label="Phone">
+              {{ supplier.phone || '-' }}
+            </td>
+
+            <td data-label="Email">
+              {{ supplier.email || '-' }}
+            </td>
+
+            <td data-label="Tax Number">
+              {{ supplier.taxNumber || '-' }}
+            </td>
+
+            <td data-label="Status">
+              <span
+                class="status"
+                [class.active]="supplier.isActive"
+                [class.inactive]="!supplier.isActive">
+                {{ supplier.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+
+            <td data-label="Created Date">
+              {{ supplier.creationTime | date:'medium' }}
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<ng-template #noData>
+  <div class="alert" role="alert">
+    No suppliers found
+  </div>
+</ng-template>
