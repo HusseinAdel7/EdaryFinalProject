@@ -12,6 +12,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Linq;
 using System.Linq.Dynamic.Core;
+using Volo.Abp.Validation;
 
 namespace Edary.AppServices.MainAccounts
 {
@@ -36,6 +37,26 @@ namespace Edary.AppServices.MainAccounts
         {
             _mainAccountManager = mainAccountManager;
             _subAccountRepository = subAccountRepository;
+        }
+
+        public override async Task<MainAccountDto> GetAsync(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new AbpValidationException("معرّف الحساب مطلوب");
+            }
+
+            return await base.GetAsync(id);
+        }
+
+        public override async Task DeleteAsync(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new AbpValidationException("معرّف الحساب مطلوب");
+            }
+
+            await base.DeleteAsync(id);
         }
 
         public override async Task<MainAccountDto> CreateAsync(CreateMainAccountDto input)
