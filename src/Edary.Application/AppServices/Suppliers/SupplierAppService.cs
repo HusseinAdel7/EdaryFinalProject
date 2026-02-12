@@ -102,10 +102,8 @@ namespace Edary.AppServices.Suppliers
             await _subAccountRepository.InsertAsync(subAccount, autoSave: true);
 
             var newSupplierCode = await _supplierManager.GenerateNewSupplierCodeAsync();
-            var newSupplierId = GuidGenerator.Create().ToString();
             var supplier = new Supplier
             {
-                Id = newSupplierId,
                 SupplierCode = newSupplierCode,
                 SubAccountId = subAccount.Id,
                 SupplierName = supplierName,
@@ -117,6 +115,7 @@ namespace Edary.AppServices.Suppliers
                 IsActive = input.IsActive ?? true,
                 SupplierNameEn = string.IsNullOrWhiteSpace(input.SupplierNameEn) ? null : input.SupplierNameEn.Trim()
             };
+            EntityHelper.TrySetId(supplier, () => GuidGenerator.Create().ToString());
 
             var created = await Repository.InsertAsync(supplier, autoSave: true);
             return MapToGetOutputDto(created);

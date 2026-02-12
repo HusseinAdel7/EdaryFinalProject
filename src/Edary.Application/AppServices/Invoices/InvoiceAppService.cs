@@ -112,7 +112,6 @@ namespace Edary.AppServices.Invoices
 
             var invoice = new Invoice
             {
-                Id = GuidGenerator.Create().ToString(),
                 InvoiceNumber = invoiceNumber,
                 InvoiceType = input.InvoiceType?.Trim(),
                 SupplierId = string.IsNullOrWhiteSpace(input.SupplierId) ? null : input.SupplierId.Trim(),
@@ -126,12 +125,12 @@ namespace Edary.AppServices.Invoices
                 Notes = string.IsNullOrWhiteSpace(input.Notes) ? null : input.Notes.Trim(),
                 InvoiceDetails = new HashSet<InvoiceDetail>()
             };
+            EntityHelper.TrySetId(invoice, () => GuidGenerator.Create().ToString());
 
             foreach (var d in input.InvoiceDetails)
             {
                 var detail = new InvoiceDetail
                 {
-                    Id = GuidGenerator.Create().ToString(),
                     InvoiceId = invoice.Id,
                     ItemId = d.ItemId.Trim(),
                     UnitName = d.UnitName?.Trim(),
@@ -140,6 +139,7 @@ namespace Edary.AppServices.Invoices
                     Discount = d.Discount,
                     TaxRate = d.TaxRate
                 };
+                EntityHelper.TrySetId(detail, () => GuidGenerator.Create().ToString());
                 invoice.InvoiceDetails.Add(detail);
             }
 
@@ -172,7 +172,6 @@ namespace Edary.AppServices.Invoices
                 {
                     var newDetail = new InvoiceDetail
                     {
-                        Id = GuidGenerator.Create().ToString(),
                         InvoiceId = id,
                         ItemId = detailDto.ItemId.Trim(),
                         UnitName = detailDto.UnitName?.Trim(),
@@ -181,6 +180,7 @@ namespace Edary.AppServices.Invoices
                         Discount = detailDto.Discount,
                         TaxRate = detailDto.TaxRate
                     };
+                    EntityHelper.TrySetId(newDetail, () => GuidGenerator.Create().ToString());
                     await _invoiceDetailRepository.InsertAsync(newDetail);
                 }
                 else

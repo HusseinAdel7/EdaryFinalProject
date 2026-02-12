@@ -48,7 +48,6 @@ namespace Edary.AppServices.Warehouses
 
             var warehouse = new Warehouse
             {
-                Id = GuidGenerator.Create().ToString(),
                 WarehouseCode = generatedCode,
                 WarehouseName = input.WarehouseName.Trim(),
                 Location = string.IsNullOrWhiteSpace(input.Location) ? null : input.Location.Trim(),
@@ -58,6 +57,7 @@ namespace Edary.AppServices.Warehouses
                 WarehouseNameEn = string.IsNullOrWhiteSpace(input.WarehouseNameEn) ? null : input.WarehouseNameEn.Trim(),
                 ManagerNameEn = string.IsNullOrWhiteSpace(input.ManagerNameEn) ? null : input.ManagerNameEn.Trim()
             };
+            Volo.Abp.Domain.Entities.EntityHelper.TrySetId(warehouse, () => GuidGenerator.Create().ToString());
 
             var created = await Repository.InsertAsync(warehouse, autoSave: true);
             return MapToGetOutputDto(created);

@@ -100,7 +100,6 @@ namespace Edary.AppServices.Items
 
             var item = new Item
             {
-                Id = GuidGenerator.Create().ToString(),
                 ItemCode = generatedCode,
                 ItemName = input.ItemName?.Trim(),
                 ItemType = string.IsNullOrWhiteSpace(input.ItemType) ? null : input.ItemType.Trim(),
@@ -119,12 +118,12 @@ namespace Edary.AppServices.Items
                 UnitOfMeasureEn = string.IsNullOrWhiteSpace(input.UnitOfMeasureEn) ? null : input.UnitOfMeasureEn.Trim(),
                 ItemPrices = new HashSet<ItemPrice>()
             };
+            Volo.Abp.Domain.Entities.EntityHelper.TrySetId(item, () => GuidGenerator.Create().ToString());
 
             foreach (var p in input.ItemPrices)
             {
                 var price = new ItemPrice
                 {
-                    Id = GuidGenerator.Create().ToString(),
                     ItemId = item.Id,
                     UnitName = p.UnitName?.Trim(),
                     WholePrice = p.WholePrice,
@@ -136,6 +135,7 @@ namespace Edary.AppServices.Items
                     UnitNameEn = string.IsNullOrWhiteSpace(p.UnitNameEn) ? null : p.UnitNameEn.Trim(),
                     CurrencyEn = string.IsNullOrWhiteSpace(p.CurrencyEn) ? null : p.CurrencyEn.Trim()
                 };
+                Volo.Abp.Domain.Entities.EntityHelper.TrySetId(price, () => GuidGenerator.Create().ToString());
                 item.ItemPrices.Add(price);
             }
 
@@ -182,7 +182,6 @@ namespace Edary.AppServices.Items
                 {
                     var newPrice = new ItemPrice
                     {
-                        Id = GuidGenerator.Create().ToString(),
                         ItemId = id,
                         UnitName = priceDto.UnitName?.Trim(),
                         WholePrice = priceDto.WholePrice,
@@ -194,6 +193,7 @@ namespace Edary.AppServices.Items
                         UnitNameEn = string.IsNullOrWhiteSpace(priceDto.UnitNameEn) ? null : priceDto.UnitNameEn.Trim(),
                         CurrencyEn = string.IsNullOrWhiteSpace(priceDto.CurrencyEn) ? null : priceDto.CurrencyEn.Trim()
                     };
+                    Volo.Abp.Domain.Entities.EntityHelper.TrySetId(newPrice, () => GuidGenerator.Create().ToString());
                     item.ItemPrices.Add(newPrice);
                 }
                 else if (existingPricesById.TryGetValue(priceDto.Id, out var existingPrice))
