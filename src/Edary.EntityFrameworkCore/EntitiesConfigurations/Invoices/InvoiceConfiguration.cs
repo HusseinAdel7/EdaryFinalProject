@@ -49,23 +49,22 @@ namespace Edary.EntityFrameworkCore.EntitiesConfigurations.Invoices
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Invoice -> Supplier
-            builder.HasOne<Supplier>()
+            builder.HasOne(x => x.Supplier)
                 .WithMany()
                 .HasForeignKey(x => x.SupplierId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Invoice -> Warehouse
-            builder.HasOne<Warehouse>()
+            builder.HasOne(x => x.Warehouse)
                 .WithMany()
                 .HasForeignKey(x => x.WarehouseId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Invoice -> JournalEntry
-            builder.HasOne<JournalEntry>()
+            builder.HasOne(x => x.JournalEntry)
                 .WithMany()
                 .HasForeignKey(x => x.JournalEntryId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
-

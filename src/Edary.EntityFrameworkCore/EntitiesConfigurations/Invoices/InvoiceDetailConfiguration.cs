@@ -31,7 +31,7 @@ namespace Edary.EntityFrameworkCore.EntitiesConfigurations.Invoices
                 .HasComputedColumnSql("(([Quantity]*[UnitPrice]-[Discount])+(([Quantity]*[UnitPrice]-[Discount])*[TaxRate])/(100))", stored: true);
 
             // InvoiceDetail -> Item
-            builder.HasOne<Item>()
+            builder.HasOne(x => x.Item)
                 .WithMany()
                 .HasForeignKey(x => x.ItemId)
                 .OnDelete(DeleteBehavior.Restrict);
