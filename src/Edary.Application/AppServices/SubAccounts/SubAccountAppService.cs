@@ -1,6 +1,8 @@
 using Edary.DTOs.SubAccounts;
 using Edary.Entities.SubAccounts;
 using Edary.IAppServices;
+using Edary.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Edary.Domain.Services.SubAccounts;
@@ -15,6 +17,7 @@ using Volo.Abp.Validation;
 
 namespace Edary.AppServices.SubAccounts
 {
+    [Authorize(EdaryPermissions.SubAccounts.Default)]
     public class SubAccountAppService
     : CrudAppService<
         SubAccount,
@@ -38,6 +41,7 @@ namespace Edary.AppServices.SubAccounts
             _mainAccountRepository = mainAccountRepository;
         }
 
+        [Authorize(EdaryPermissions.SubAccounts.Create)]
         public override async Task<SubAccountDto> CreateAsync(CreateSubAccountDto input)
         {
             // Validate MainAccount exists and is active
@@ -122,6 +126,7 @@ namespace Edary.AppServices.SubAccounts
             return MapToGetOutputDto(createdAccount);
         }
 
+        [Authorize(EdaryPermissions.SubAccounts.Update)]
         public override async Task<SubAccountDto> UpdateAsync(string id, UpdateSubAccountDto input)
         {
             if (string.IsNullOrWhiteSpace(id))

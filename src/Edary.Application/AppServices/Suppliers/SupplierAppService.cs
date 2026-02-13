@@ -8,6 +8,8 @@ using Edary.Entities.MainAccounts;
 using Edary.Entities.SubAccounts;
 using Edary.Entities.Suppliers;
 using Edary.IAppServices;
+using Edary.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -17,6 +19,7 @@ using Volo.Abp.Validation;
 
 namespace Edary.AppServices.Suppliers
 {
+    [Authorize(EdaryPermissions.Suppliers.Default)]
     public class SupplierAppService :
         CrudAppService<
             Supplier,
@@ -56,6 +59,7 @@ namespace Edary.AppServices.Suppliers
             return await base.GetAsync(id);
         }
 
+        [Authorize(EdaryPermissions.Suppliers.Delete)]
         public override async Task DeleteAsync(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -66,6 +70,7 @@ namespace Edary.AppServices.Suppliers
             await base.DeleteAsync(id);
         }
 
+        [Authorize(EdaryPermissions.Suppliers.Create)]
         public override async Task<SupplierDto> CreateAsync(CreateSupplierDto input)
         {
             if (string.IsNullOrWhiteSpace(input.SupplierName))
@@ -121,6 +126,7 @@ namespace Edary.AppServices.Suppliers
             return MapToGetOutputDto(created);
         }
 
+        [Authorize(EdaryPermissions.Suppliers.Update)]
         public override async Task<SupplierDto> UpdateAsync(string id, UpdateSupplierDto input)
         {
             if (string.IsNullOrWhiteSpace(id))

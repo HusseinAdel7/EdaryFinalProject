@@ -2,6 +2,8 @@ using Edary.DTOs.MainAccounts;
 using Edary.Entities.MainAccounts;
 using Edary.Entities.SubAccounts;
 using Edary.IAppServices;
+using Edary.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Edary.Domain.Services.MainAccounts;
@@ -16,6 +18,7 @@ using Volo.Abp.Validation;
 
 namespace Edary.AppServices.MainAccounts
 {
+    [Authorize(EdaryPermissions.MainAccounts.Default)]
     public class MainAccountAppService
     : CrudAppService<
         MainAccount,
@@ -49,6 +52,7 @@ namespace Edary.AppServices.MainAccounts
             return await base.GetAsync(id);
         }
 
+        [Authorize(EdaryPermissions.MainAccounts.Delete)]
         public override async Task DeleteAsync(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -59,6 +63,7 @@ namespace Edary.AppServices.MainAccounts
             await base.DeleteAsync(id);
         }
 
+        [Authorize(EdaryPermissions.MainAccounts.Create)]
         public override async Task<MainAccountDto> CreateAsync(CreateMainAccountDto input)
         {
             var newAccountId = GuidGenerator.Create().ToString();
@@ -82,6 +87,7 @@ namespace Edary.AppServices.MainAccounts
             return MapToGetOutputDto(createdAccount);
         }
 
+        [Authorize(EdaryPermissions.MainAccounts.Update)]
         public override async Task<MainAccountDto> UpdateAsync(string id, UpdateMainAccountDto input)
         {
             var mainAccount = await Repository.GetAsync(id);

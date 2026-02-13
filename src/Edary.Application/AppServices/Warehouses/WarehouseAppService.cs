@@ -5,6 +5,8 @@ using Edary.Domain.Services.Warehouses;
 using Edary.DTOs.Warehouses;
 using Edary.Entities.Warehouses;
 using Edary.IAppServices;
+using Edary.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
@@ -12,6 +14,7 @@ using Volo.Abp.Validation;
 
 namespace Edary.AppServices.Warehouses
 {
+    [Authorize(EdaryPermissions.Warehouses.Default)]
     public class WarehouseAppService :
         CrudAppService<
             Warehouse,
@@ -39,6 +42,7 @@ namespace Edary.AppServices.Warehouses
             return await base.GetAsync(id);
         }
 
+        [Authorize(EdaryPermissions.Warehouses.Create)]
         public override async Task<WarehouseDto> CreateAsync(CreateWarehouseDto input)
         {
             if (string.IsNullOrWhiteSpace(input.WarehouseName))
@@ -63,6 +67,7 @@ namespace Edary.AppServices.Warehouses
             return MapToGetOutputDto(created);
         }
 
+        [Authorize(EdaryPermissions.Warehouses.Update)]
         public override async Task<WarehouseDto> UpdateAsync(string id, UpdateWarehouseDto input)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -84,6 +89,7 @@ namespace Edary.AppServices.Warehouses
             return MapToGetOutputDto(updated);
         }
 
+        [Authorize(EdaryPermissions.Warehouses.Delete)]
         public override async Task DeleteAsync(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
