@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Edary.DTOs
+namespace Edary.DTOs.AccountStatments
 {
     public class AccountStatementPeriodDto
     {

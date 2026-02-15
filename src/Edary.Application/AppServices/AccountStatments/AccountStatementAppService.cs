@@ -1,5 +1,4 @@
-﻿using Edary.DTOs;
-using Edary.DTOs.AccountStatments;
+﻿using Edary.DTOs.AccountStatments;
 using Edary.IAppServices.Edary.IAppServices;
 using Edary.Permissions;
 using Edary.Services.AccountStatments;

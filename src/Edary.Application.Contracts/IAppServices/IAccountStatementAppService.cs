@@ -1,5 +1,4 @@
-﻿using Edary.DTOs;
-using Edary.DTOs.AccountStatments;
+﻿using Edary.DTOs.AccountStatments;
 using System;
 using System.Collections.Generic;
 using System.Text;
