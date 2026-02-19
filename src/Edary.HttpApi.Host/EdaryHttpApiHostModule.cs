@@ -1,44 +1,40 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
+using Edary.EntityFrameworkCore;
+using Edary.HealthChecks;
+using Edary.MultiTenancy;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Extensions.DependencyInjection;
-using OpenIddict.Validation.AspNetCore;
-using OpenIddict.Server.AspNetCore;
-using Edary.EntityFrameworkCore;
-using Edary.MultiTenancy;
-using Edary.HealthChecks;
 using Microsoft.OpenApi.Models;
+using OpenIddict.Server.AspNetCore;
+using OpenIddict.Validation.AspNetCore;
+using System;
+using System.IO;
+using System.Linq;
 using Volo.Abp;
-using Volo.Abp.Studio;
-using Volo.Abp.Account;
 using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.MultiTenancy;
 using Volo.Abp.AspNetCore.Mvc;
-using Volo.Abp.Autofac;
-using Volo.Abp.Localization;
-using Volo.Abp.Modularity;
-using Volo.Abp.UI.Navigation.Urls;
-using Volo.Abp.VirtualFileSystem;
+using Volo.Abp.AspNetCore.Mvc.Libs;
 using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
-using Microsoft.AspNetCore.Hosting;
 using Volo.Abp.AspNetCore.Serilog;
+using Volo.Abp.Autofac;
 using Volo.Abp.Identity;
+using Volo.Abp.Modularity;
 using Volo.Abp.OpenIddict;
-using Volo.Abp.Swashbuckle;
-using Volo.Abp.Studio.Client.AspNetCore;
 using Volo.Abp.Security.Claims;
+using Volo.Abp.Studio;
+using Volo.Abp.Studio.Client.AspNetCore;
+using Volo.Abp.Swashbuckle;
+using Volo.Abp.UI.Navigation.Urls;
+using Volo.Abp.VirtualFileSystem;
 
 namespace Edary;
 
@@ -53,12 +49,11 @@ namespace Edary;
     typeof(AbpAccountWebOpenIddictModule),
     typeof(AbpSwashbuckleModule),
     typeof(AbpAspNetCoreSerilogModule)
-    )]
+)]
 public class EdaryHttpApiHostModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {
-        var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
 
         PreConfigure<OpenIddictBuilder>(builder =>
@@ -71,25 +66,25 @@ public class EdaryHttpApiHostModule : AbpModule
             });
         });
 
-        if (!hostingEnvironment.IsDevelopment())
+        // ✅ نستخدم Development Certificates في كل البيئات
+        PreConfigure<OpenIddictServerBuilder>(serverBuilder =>
         {
-            PreConfigure<AbpOpenIddictAspNetCoreOptions>(options =>
-            {
-                options.AddDevelopmentEncryptionAndSigningCertificate = false;
-            });
+            serverBuilder
+                .AddDevelopmentEncryptionCertificate()
+                .AddDevelopmentSigningCertificate();
 
-            PreConfigure<OpenIddictServerBuilder>(serverBuilder =>
-            {
-                serverBuilder.AddProductionEncryptionAndSigningCertificate("openiddict.pfx", configuration["AuthServer:CertificatePassPhrase"]!);
-                serverBuilder.SetIssuer(new Uri(configuration["AuthServer:Authority"]!));
-            });
-        }
+            serverBuilder.SetIssuer(new Uri(configuration["AuthServer:Authority"]!));
+        });
     }
 
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         var configuration = context.Services.GetConfiguration();
         var hostingEnvironment = context.Services.GetHostingEnvironment();
+        Configure<AbpMvcLibsOptions>(options =>
+        {
+            options.CheckLibs = false;
+        });
 
         if (!configuration.GetValue<bool>("App:DisablePII"))
         {
@@ -103,7 +98,7 @@ public class EdaryHttpApiHostModule : AbpModule
             {
                 options.DisableTransportSecurityRequirement = true;
             });
-            
+
             Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
@@ -112,7 +107,6 @@ public class EdaryHttpApiHostModule : AbpModule
             });
         }
 
-        ConfigureStudio(hostingEnvironment);
         ConfigureAuthentication(context);
         ConfigureUrls(configuration);
         ConfigureBundles();
@@ -123,20 +117,11 @@ public class EdaryHttpApiHostModule : AbpModule
         ConfigureCors(context, configuration);
     }
 
-    private void ConfigureStudio(IHostEnvironment hostingEnvironment)
-    {
-        if (hostingEnvironment.IsProduction())
-        {
-            Configure<AbpStudioClientOptions>(options =>
-            {
-                options.IsLinkEnabled = false;
-            });
-        }
-    }
-
     private void ConfigureAuthentication(ServiceConfigurationContext context)
     {
-        context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
+        context.Services.ForwardIdentityAuthenticationForBearer(
+            OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
+
         context.Services.Configure<AbpClaimsPrincipalFactoryOptions>(options =>
         {
             options.IsDynamicClaimsEnabled = true;
@@ -149,8 +134,9 @@ public class EdaryHttpApiHostModule : AbpModule
         {
             options.Applications["MVC"].RootUrl = configuration["App:SelfUrl"];
             options.Applications["Angular"].RootUrl = configuration["App:AngularUrl"];
-            options.Applications["Angular"].Urls[AccountUrlNames.PasswordReset] = "account/reset-password";
-            options.RedirectAllowedUrls.AddRange(configuration["App:RedirectAllowedUrls"]?.Split(',') ?? Array.Empty<string>());
+            options.RedirectAllowedUrls.AddRange(
+                configuration["App:RedirectAllowedUrls"]?
+                .Split(',') ?? Array.Empty<string>());
         });
     }
 
@@ -160,22 +146,15 @@ public class EdaryHttpApiHostModule : AbpModule
         {
             options.StyleBundles.Configure(
                 LeptonXLiteThemeBundles.Styles.Global,
-                bundle =>
-                {
-                    bundle.AddFiles("/global-styles.css");
-                }
+                bundle => bundle.AddFiles("/global-styles.css")
             );
 
             options.ScriptBundles.Configure(
                 LeptonXLiteThemeBundles.Scripts.Global,
-                bundle =>
-                {
-                    bundle.AddFiles("/global-scripts.js");
-                }
+                bundle => bundle.AddFiles("/global-scripts.js")
             );
         });
     }
-
 
     private void ConfigureVirtualFileSystem(ServiceConfigurationContext context)
     {
@@ -185,10 +164,8 @@ public class EdaryHttpApiHostModule : AbpModule
         {
             Configure<AbpVirtualFileSystemOptions>(options =>
             {
-                options.FileSets.ReplaceEmbeddedByPhysical<EdaryDomainSharedModule>(Path.Combine(hostingEnvironment.ContentRootPath, $"..{Path.DirectorySeparatorChar}Edary.Domain.Shared"));
-                options.FileSets.ReplaceEmbeddedByPhysical<EdaryDomainModule>(Path.Combine(hostingEnvironment.ContentRootPath, $"..{Path.DirectorySeparatorChar}Edary.Domain"));
-                options.FileSets.ReplaceEmbeddedByPhysical<EdaryApplicationContractsModule>(Path.Combine(hostingEnvironment.ContentRootPath, $"..{Path.DirectorySeparatorChar}Edary.Application.Contracts"));
-                options.FileSets.ReplaceEmbeddedByPhysical<EdaryApplicationModule>(Path.Combine(hostingEnvironment.ContentRootPath, $"..{Path.DirectorySeparatorChar}Edary.Application"));
+                options.FileSets.ReplaceEmbeddedByPhysical<EdaryDomainSharedModule>(
+                    Path.Combine(hostingEnvironment.ContentRootPath, "..\\Edary.Domain.Shared"));
             });
         }
     }
@@ -225,12 +202,10 @@ public class EdaryHttpApiHostModule : AbpModule
                 builder
                     .WithOrigins(
                         configuration["App:CorsOrigins"]?
-                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                            .Select(o => o.Trim().RemovePostFix("/"))
-                            .ToArray() ?? Array.Empty<string>()
+                        .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                        .Select(o => o.Trim())
+                        .ToArray() ?? Array.Empty<string>()
                     )
-                    .WithAbpExposedHeaders()
-                    .SetIsOriginAllowedToAllowWildcardSubdomains()
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
@@ -243,7 +218,6 @@ public class EdaryHttpApiHostModule : AbpModule
         context.Services.AddEdaryHealthChecks();
     }
 
-
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
         var app = context.GetApplicationBuilder();
@@ -252,44 +226,19 @@ public class EdaryHttpApiHostModule : AbpModule
         app.UseForwardedHeaders();
 
         if (env.IsDevelopment())
-        {
             app.UseDeveloperExceptionPage();
-        }
-
-        app.UseAbpRequestLocalization();
-
-        if (!env.IsDevelopment())
-        {
-            app.UseErrorPage();
-        }
 
         app.UseRouting();
-        app.MapAbpStaticAssets();
-        app.UseAbpStudioLink();
-        app.UseAbpSecurityHeaders();
         app.UseCors();
         app.UseAuthentication();
         app.UseAbpOpenIddictValidation();
-
-        if (MultiTenancyConsts.IsEnabled)
-        {
-            app.UseMultiTenancy();
-        }
-
-        app.UseUnitOfWork();
-        app.UseDynamicClaims();
         app.UseAuthorization();
-
         app.UseSwagger();
         app.UseAbpSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "Edary API");
-
-            var configuration = context.ServiceProvider.GetRequiredService<IConfiguration>();
-            options.OAuthClientId(configuration["AuthServer:SwaggerClientId"]);
         });
-        app.UseAuditing();
-        app.UseAbpSerilogEnrichers();
+
         app.UseConfiguredEndpoints();
     }
 }
